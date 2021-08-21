@@ -4,8 +4,10 @@ using System.Threading;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
-using Ionic.Zip;
 using Microsoft.Win32;
+using SharpCompress.Archives;
+using SharpCompress.Archives.SevenZip;
+using SharpCompress.Common;
 using USBFastBoot.Properties;
 
 namespace USBFastBoot
@@ -35,11 +37,13 @@ namespace USBFastBoot
             {
                 ;
             }
-
+            
             using (var ms = new MemoryStream(Resources.qemu))
-            using (var zip = ZipFile.Read(ms))
-                foreach (var en in zip)
-                    en.Extract(installpath);
+            using (var zip = SevenZipArchive.Open(ms))
+                zip.WriteToDirectory(installpath, new ExtractionOptions
+                {
+                    ExtractFullPath = true
+                });
 
             const string qemu = "qemu.exe";
 
