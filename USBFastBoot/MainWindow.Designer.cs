@@ -34,8 +34,7 @@
             this.cbxIMG = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.pbxLoading = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // cbxUSB
@@ -43,9 +42,9 @@
             this.cbxUSB.AutoSize = true;
             this.cbxUSB.Location = new System.Drawing.Point(20, 30);
             this.cbxUSB.Name = "cbxUSB";
-            this.cbxUSB.Size = new System.Drawing.Size(141, 19);
+            this.cbxUSB.Size = new System.Drawing.Size(163, 19);
             this.cbxUSB.TabIndex = 0;
-            this.cbxUSB.Text = "Drives (HDD and USB)";
+            this.cbxUSB.Text = "Drives (HDD, CD and USB)";
             this.cbxUSB.UseVisualStyleBackColor = true;
             this.cbxUSB.CheckedChanged += new System.EventHandler(this.cbxUSB_CheckedChanged);
             // 
@@ -103,38 +102,33 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // pbxLoading
+            // progressBar
             // 
-            this.pbxLoading.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.pbxLoading.Image = global::USBFastBoot.Properties.Resources.ajax_loader;
-            this.pbxLoading.Location = new System.Drawing.Point(88, 125);
-            this.pbxLoading.Name = "pbxLoading";
-            this.pbxLoading.Size = new System.Drawing.Size(24, 24);
-            this.pbxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pbxLoading.TabIndex = 6;
-            this.pbxLoading.TabStop = false;
-            this.pbxLoading.Visible = false;
+            this.progressBar.Location = new System.Drawing.Point(13, 126);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(174, 23);
+            this.progressBar.TabIndex = 7;
+            this.progressBar.Visible = false;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(200, 180);
-            this.Controls.Add(this.pbxLoading);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cbxIMG);
             this.Controls.Add(this.btnInstall);
             this.Controls.Add(this.cbxISO);
             this.Controls.Add(this.cbxUSB);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainWindow";
             this.Text = "USBFastBoot";
             this.Load += new System.EventHandler(this.MainWindow_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -148,7 +142,7 @@
         private System.Windows.Forms.CheckBox cbxIMG;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.PictureBox pbxLoading;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }
 

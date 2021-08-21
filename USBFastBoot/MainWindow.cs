@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using SharpCompress.Archives;
@@ -20,66 +22,81 @@ namespace USBFastBoot
             InitializeComponent();
         }
 
-        private void btnInstall_Click(object sender, EventArgs e)
+        private async void btnInstall_Click(object sender, EventArgs e)
         {
             btnInstall.Visible = false;
             button1.Visible = false;
-            pbxLoading.Visible = true;
-            // installation
-            var installpath = @"C:\Program Files\USBFastBoot\";
+            progressBar.Visible = true;
 
-            try
+            await Task.Run(() =>
             {
-                if (Directory.Exists(installpath)) Directory.Delete(installpath, true);
-                Directory.CreateDirectory(installpath);
-            }
-            catch
-            {
-                ;
-            }
-            
-            using (var ms = new MemoryStream(Resources.qemu))
-            using (var zip = SevenZipArchive.Open(ms))
-                zip.WriteToDirectory(installpath, new ExtractionOptions
+                // installation
+                var installpath = @"C:\Program Files\USBFastBoot\";
+
+                try
                 {
-                    ExtractFullPath = true
-                });
+                    if (Directory.Exists(installpath)) Directory.Delete(installpath, true);
+                    Directory.CreateDirectory(installpath);
+                }
+                catch
+                {
+                    ;
+                }
 
-            const string qemu = "qemu.exe";
+                using (var ms = new MemoryStream(Resources.qemu))
+                using (var zip = ArchiveFactory.Open(ms))
+                {
+                    var counter = 0;
+                    var entries = zip.Entries
+                        .Where(x => !x.IsDirectory)
+                        .ToArray();
+                    progressBar.Invoke((Action)(() => progressBar.Maximum = entries.Length));
+                    foreach (var entry in entries)
+                    {
+                        entry.WriteToDirectory(installpath, new ExtractionOptions
+                        {
+                            ExtractFullPath = true
+                        });
+                        progressBar.Invoke((Action)(() => progressBar.Value = Interlocked.Increment(ref counter)));
+                    }
+                }
 
-            if (cbxUSB.Checked)
-            {
-                var k = Registry.ClassesRoot.OpenSubKey("Drive", true)!
-                    .CreateSubKey("shell")!
-                    .CreateSubKey("Boot on QEMU");
-                k!.SetValue("Icon", $"\"{installpath}{qemu}\"");
-                k.CreateSubKey("command")!
-                    .SetValue("", $"\"{installpath}QemuHelper.exe\" %1");
-            }
+                const string qemu = "qemu.exe";
 
-            if (cbxISO.Checked)
-            {
-                var k = Registry.ClassesRoot.OpenSubKey("SystemFileAssociations", true)!
-                    .CreateSubKey(".iso")!
-                    .CreateSubKey("shell")!
-                    .CreateSubKey("Boot on QEMU");
-                k!.SetValue("Icon", $"\"{installpath}{qemu}\"");
-                k.CreateSubKey("command")!
-                    .SetValue("", $"\"{installpath}{qemu}\" -m 2048 -vga std -cdrom \"%1\"");
-            }
+                if (cbxUSB.Checked)
+                {
+                    var k = Registry.ClassesRoot.OpenSubKey("Drive", true)!
+                        .CreateSubKey("shell")!
+                        .CreateSubKey("Boot on QEMU");
+                    k!.SetValue("Icon", $"\"{installpath}{qemu}\"");
+                    k.CreateSubKey("command")!
+                        .SetValue("", $"\"{installpath}QemuHelper.exe\" %1");
+                }
 
-            if (cbxIMG.Checked)
-            {
-                var k = Registry.ClassesRoot.OpenSubKey("SystemFileAssociations", true)!
-                    .CreateSubKey(".img")!
-                    .CreateSubKey("shell")!
-                    .CreateSubKey("Boot on QEMU");
-                k!.SetValue("Icon", $"\"{installpath}{qemu}\"");
-                k.CreateSubKey("command")!
-                    .SetValue("", $"\"{installpath}{qemu}\" -m 2048 -vga std -fda \"%1\"");
-            }
+                if (cbxISO.Checked)
+                {
+                    var k = Registry.ClassesRoot.OpenSubKey("SystemFileAssociations", true)!
+                        .CreateSubKey(".iso")!
+                        .CreateSubKey("shell")!
+                        .CreateSubKey("Boot on QEMU");
+                    k!.SetValue("Icon", $"\"{installpath}{qemu}\"");
+                    k.CreateSubKey("command")!
+                        .SetValue("", $"\"{installpath}{qemu}\" -m 2048 -vga std -cdrom \"%1\"");
+                }
+
+                if (cbxIMG.Checked)
+                {
+                    var k = Registry.ClassesRoot.OpenSubKey("SystemFileAssociations", true)!
+                        .CreateSubKey(".img")!
+                        .CreateSubKey("shell")!
+                        .CreateSubKey("Boot on QEMU");
+                    k!.SetValue("Icon", $"\"{installpath}{qemu}\"");
+                    k.CreateSubKey("command")!
+                        .SetValue("", $"\"{installpath}{qemu}\" -m 2048 -vga std -fda \"%1\"");
+                }
+            });
             
-            pbxLoading.Visible = false;
+            progressBar.Visible = false;
             btnInstall.Visible = true;
             button1.Visible = true;
         }
@@ -93,7 +110,7 @@ namespace USBFastBoot
         {
             button1.Visible = false;
             btnInstall.Visible = false;
-            pbxLoading.Visible = true;
+            progressBar.Visible = true;
             try
             {
                 Registry.ClassesRoot.OpenSubKey("Drive", true)!
@@ -134,7 +151,7 @@ namespace USBFastBoot
             {
                 ;
             }
-            pbxLoading.Visible = false;
+            progressBar.Visible = false;
             button1.Visible = true;
             btnInstall.Visible = true;
         }
