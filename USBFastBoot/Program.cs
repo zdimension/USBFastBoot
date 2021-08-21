@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 namespace USBFastBoot
 {
-    static class Program
+    [SupportedOSPlatform("windows")]
+    internal static class Program
     {
         /// <summary>
         /// Point d'entrée principal de l'application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
